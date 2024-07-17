@@ -11,7 +11,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/bookingapp', {})
+const mongoURI = process.env.MONGODB_URI;
+
+if (!mongoURI) {
+  console.error('Error: MONGODB_URI environment variable not set.');
+  process.exit(1);
+}
+
+mongoose.connect(mongoURI)
   .then(() => {
     console.log('Connected to MongoDB');
   })
@@ -25,12 +32,13 @@ app.use(express.json());
 
 // CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:4200', // Allow only this origin
+  origin: 'https://booking02.netlify.app', // Allow only this origin
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true // Allow credentials
 };
 
 app.use(cors(corsOptions));
+
 // Session middleware
 app.use(session({
   secret: keys.session.cookieKey,

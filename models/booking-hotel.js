@@ -34,7 +34,7 @@ const Schema = mongoose.Schema;
 const BookingApplicationSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
+  // lastName: { type: String, required: true },
   hotelName: { type: String },
   email: { type: String, required: true },
   checkInDate: { type: Date, required: true },

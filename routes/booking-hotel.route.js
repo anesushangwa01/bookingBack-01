@@ -60,7 +60,7 @@ router.post('/', ensureAuthenticated, async (req, res) => {
       <html>
         <body style="font-family: Arial, sans-serif; color: #333;">
           <h1 style="color: #0056b3;">Booking Confirmation</h1>
-          <p>Hello ${req.body.firstName} ${req.body.lastName},</p>
+          <p>Hello ${req.body.firstName}</p>
           <p>Your booking details:</p>
           <h2>${req.body.hotelName}</h2>
           <ul>
