@@ -10,7 +10,7 @@ router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
     // Successful authentication, redirect home or to the dashboard
-    res.redirect('http://localhost:4200');
+    res.redirect('https://booking02.netlify.app');
   }
 );
 
