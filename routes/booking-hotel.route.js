@@ -71,7 +71,7 @@ router.post('/', ensureAuthenticated, async (req, res) => {
             <li><strong>Number of Rooms:</strong> ${req.body.numberOfRooms}</li>
             <li><strong>Special Requests:</strong> ${req.body.specialRequests}</li>
           </ul>
-          <p>Thank you for booking with us!</p>
+          <p>Thank you  ${req.body.firstName} for booking with us!</p>
         </body>
       </html>
     `,
