@@ -62,7 +62,7 @@ app.use('/auth', authRoutes);
 
 app.get('/profile', (req, res) => {
   if (req.user) {
-    res.send(`Welcome, ${req.user.username}`);
+    res.send(`Welcome, ${req.user.username},${req.user.email}`);
   } else {
     res.redirect('/auth/login');
   }
