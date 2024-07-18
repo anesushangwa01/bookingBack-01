@@ -32,7 +32,7 @@ app.use(express.json());
 
 // CORS configuration
 const corsOptions = {
-  origin: '*', // Allow only this origin
+  origin: 'https://bookingapk.netlify.app/', // Allow only this origin
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true // Allow credentials
 };
