@@ -17,7 +17,7 @@ passport.use(
   new GoogleStrategy({
     clientID: keys.google.clientID,
     clientSecret: keys.google.clientSecret,
-    callbackURL: 'https://bookingback-01.onrender.com/auth/google/callback'
+    callbackURL: 'https://bookingback-01.onrender.com/google/callback'
   }, (accessToken, refreshToken, profile, done) => {
     User.findOne({ googleId: profile.id }).then((existingUser) => {
       if (existingUser) {
