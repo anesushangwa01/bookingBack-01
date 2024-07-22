@@ -32,7 +32,7 @@ app.use(express.json());
 
 // CORS configuration
 const corsOptions = {
-  origin: 'https://bookingapk.netlify.app', // Allow only this origin
+  origin: ' http://localhost:4200', // Allow only this origin
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true // Allow credentials
 };
@@ -41,7 +41,7 @@ app.use(cors(corsOptions));
 
 // Session middleware
 app.use(session({
-  secret: keys.session.cookieKey,
+  secret: keys.session.cookieKey   ,
   resave: false,
   saveUninitialized: false,
   cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
