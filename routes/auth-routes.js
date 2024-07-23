@@ -10,7 +10,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/callback', 
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect('https://googleauth2.netlify.app/googleauth');
+    res.redirect('https://googleauth2.netlify.app');
   }
 );
 
