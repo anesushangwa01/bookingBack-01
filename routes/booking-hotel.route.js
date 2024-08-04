@@ -1,39 +1,27 @@
-
 const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const BookingApplication = require('../models/booking-hotel');
+const User = require('../models/user'); 
+const authenticateToken = require('../middleware/jwt');
+
 require('dotenv').config();
 
-const ensureAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).send('User not authenticated');
-};
-
-// Endpoint to get all bookings
-router.get('/', ensureAuthenticated ,async (req, res) => {
-  try {
-    const bookings = await BookingApplication.find({ user: req.user._id });
-    res.json(bookings);
-  } catch (err) {
-    console.error('Error fetching bookings:', err);
-    res.status(500).send('Error fetching bookings');
-  }
-});
-
-
-
-// Endpoint to handle booking application and send email
-router.post('/', ensureAuthenticated, async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
     console.log('Received booking request:', req.body);
 
+    // Ensure the user is authenticated and their ID is available
+    if (!req.user || !req.user.userId) {
+      return res.status(401).send('User not authenticated');
+    }
+
+    // Create a new booking application with the authenticated user's ID
     const applyBooking = new BookingApplication({
       ...req.body,
-      user: req.user._id, // Associate booking with authenticated user
+      user: req.user.userId, // Use 'user' to match schema
     });
+
     const savedBooking = await applyBooking.save();
 
     // Microsoft Outlook transporter configuration
@@ -42,8 +30,8 @@ router.post('/', ensureAuthenticated, async (req, res) => {
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: process.env.EMAIL_USER, // Your email address
-        pass: process.env.EMAIL_PASS, // Your Microsoft account password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
@@ -56,18 +44,18 @@ router.post('/', ensureAuthenticated, async (req, res) => {
       <html>
         <body style="font-family: Arial, sans-serif; color: #333;">
           <h1 style="color: #0056b3;">Booking Confirmation</h1>
-          <p>Hello ${req.body.firstName}</p>
+          <p>Hello ${req.body.firstName} ${req.body.lastName},</p>
           <p>Your booking details:</p>
           <h2>${req.body.hotelName}</h2>
           <ul>
-            <li><strong>Check-in Date:</strong> ${req.body.checkInDate}</li>
-            <li><strong>Check-out Date:</strong> ${req.body.checkOutDate}</li>
+            <li><strong>Check-in Date:</strong> ${new Date(req.body.checkInDate).toLocaleDateString()}</li>
+            <li><strong>Check-out Date:</strong> ${new Date(req.body.checkOutDate).toLocaleDateString()}</li>
             <li><strong>Number of Guests:</strong> ${req.body.numberOfGuests}</li>
             <li><strong>Room Type:</strong> ${req.body.roomType}</li>
             <li><strong>Number of Rooms:</strong> ${req.body.numberOfRooms}</li>
-            <li><strong>Special Requests:</strong> ${req.body.specialRequests}</li>
+            <li><strong>Special Requests:</strong> ${req.body.specialRequests || 'None'}</li>
           </ul>
-          <p>Thank you  ${req.body.firstName} for booking with us!</p>
+          <p>Thank you for booking with us!</p>
         </body>
       </html>
     `,
