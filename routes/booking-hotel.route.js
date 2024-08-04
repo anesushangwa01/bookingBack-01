@@ -64,7 +64,7 @@ router.post('/', authenticateToken, async (req, res) => {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error('Error sending email:', error);
-        return res.status(500).send('Error sending email');
+        return res.status(500).send(`Error sending email: ${error.message}`);
       }
       console.log('Email sent:', info.response);
       res.status(201).json(savedBooking);
