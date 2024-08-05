@@ -5,27 +5,35 @@ const  UserBooking = require('../models/register');
 
 router.post('/', async (req, res) => {
   try {
-    // Example validation: Check for missing fields
-    if (!req.body.name || !req.body.email || !req.body.password) {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Hash password and create user
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const existingUserByEmail = await UserBooking.findOne({ email });
+    if (existingUserByEmail) {
+      return res.status(409).json({ message: 'User with this email already exists' });
+    }
+
+    const existingUserByName = await UserBooking.findOne({ name });
+    if (existingUserByName) {
+      return res.status(409).json({ message: 'User with this name already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = new UserBooking({
-      name: req.body.name,
-      email: req.body.email,
+      name,
+      email,
       password: hashedPassword
     });
 
-    // Save the user to the database
     const savedUser = await user.save();
     res.status(201).json(savedUser);
   } catch (error) {
-    console.error('Error registering user:', error); // Log the error for debugging
-    res.status(400).json({ message: 'Error registering user', error });
-  } 
+    console.error('Error registering user:', error);
+    res.status(500).json({ message: 'Error registering user', error: error.message });
+  }
 });
-
 
 module.exports = router;
