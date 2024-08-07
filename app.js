@@ -32,7 +32,7 @@ mongoose.connect(mongoURI)
 // Express middleware
 app.use(express.json());
 
-// CORS configuration
+// CORS configurations
 const corsOptions = {
   origin: 'https://bookingapk.netlify.app', // Allow only this origin
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
