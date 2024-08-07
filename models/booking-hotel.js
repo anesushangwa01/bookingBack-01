@@ -35,7 +35,7 @@ const Schema = mongoose.Schema;
 // Schema for booking applications
 const BookingApplicationSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'register',  required: true},
-  firstName: { type: String, required: true },
+  firstName: { type: String },
   lastName: { type: String },
   hotelName: { type: String },
   email: { type: String, required: true },
