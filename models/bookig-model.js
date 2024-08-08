@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 
-
 const bookingSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   city: { type: String, required: true },
   state: { type: String, required: true },
   photo1: { type: String, required: true },

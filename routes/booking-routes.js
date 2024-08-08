@@ -13,16 +13,21 @@ router.get('/', async (req, res) => {
   });
 
   
-  
   router.post('/', async (req, res) => {
     try {
-      const newBooking = new  Booking(req.body);
+      const existingBooking = await Booking.findOne({ name: req.body.name });
+      if (existingBooking) {
+        return res.status(400).json({ message: 'Hotel name already exists.' });
+      }
+  
+      const newBooking = new Booking(req.body);
       const savedBooking = await newBooking.save();
       res.status(201).json(savedBooking);
     } catch (err) {
-      res.status(400).send(err);
+      res.status(400).json({ message: err.message }); // Send the error message to the frontend
     }
   });
+
   
   router.get('/:id', async (req, res) => {
     try {
