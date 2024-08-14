@@ -40,6 +40,21 @@ router.get('/', async (req, res) => {
       res.status(500).send(err);
     }
   });
+
+
+  router.delete('/:id', async (req, res) => {
+    try {
+      const bookingId = req.params.id;
+      const deletedBooking = await Booking.findByIdAndDelete(bookingId);
+      if (!deletedBooking) {
+        return res.status(404).send({ message: 'Booking not found' });
+      }
+      res.status(200).send({ message: 'Booking deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting booking:', error);
+      res.status(500).send({ message: 'Internal Server Error', error });
+    }
+  });
   
 
 module.exports = router;
