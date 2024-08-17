@@ -55,6 +55,22 @@ router.get('/', async (req, res) => {
       res.status(500).send({ message: 'Internal Server Error', error });
     }
   });
+
+  router.put('/:id', async (req, res) => {
+    try {
+      const bookingId = req.params.id;
+      const updatedData = req.body;
+      const updatedBooking = await Booking.findByIdAndUpdate(bookingId, updatedData, { new: true });
+  
+      if (!updatedBooking) {
+        return res.status(404).json({ message: 'Booking not found' });
+      }
+  
+      res.status(200).json({ message: 'Booking updated successfully', updatedBooking });
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating booking', error });
+    }
+  });
   
 
 module.exports = router;

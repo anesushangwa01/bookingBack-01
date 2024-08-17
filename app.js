@@ -36,7 +36,7 @@ app.use(express.json());
 //https://bookingapk.netlify.app/login?notify=true
 //http://localhost:4200
 const corsOptions = {
-  origin: 'https://bookingapk.netlify.app', // Allow only this origin
+  origin: 'http://localhost:4200', // Allow only this origin
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true // Allow credentials
 };
