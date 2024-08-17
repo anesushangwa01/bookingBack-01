@@ -43,7 +43,7 @@ const BookingApplicationSchema = new Schema({
   checkOutDate: { type: Date, required: true },
   numberOfGuests: { type: Number, required: true },
   roomType: { type: String, enum: ['single', 'double', 'suite'], required: true },
-  numberOfRooms: { type: Number, required: true },
+
   specialRequests: { type: String }
 });
 

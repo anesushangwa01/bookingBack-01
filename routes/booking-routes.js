@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const  Booking = require('../models/bookig-model');
+const isAdmin = require('../middleware/admin.jwt');
+const authenticateToken = require('../middleware/jwt');
 
-
-router.get('/', async (req, res) => {
+router.get('/' , async (req, res) => {
     try {
       const bookings = await  Booking.find();
       res.json(bookings);
@@ -42,7 +43,7 @@ router.get('/', async (req, res) => {
   });
 
 
-  router.delete('/:id', async (req, res) => {
+  router.delete('/:id',  authenticateToken, isAdmin, async (req, res) => {
     try {
       const bookingId = req.params.id;
       const deletedBooking = await Booking.findByIdAndDelete(bookingId);
@@ -56,7 +57,7 @@ router.get('/', async (req, res) => {
     }
   });
 
-  router.put('/:id', async (req, res) => {
+  router.put('/:id',  authenticateToken, isAdmin , async (req, res) => {
     try {
       const bookingId = req.params.id;
       const updatedData = req.body;

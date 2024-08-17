@@ -5,6 +5,8 @@ const BookingApplication = require('../models/booking-hotel');
 const User = require('../models/user'); 
 const authenticateToken = require('../middleware/jwt');
 
+
+
 require('dotenv').config();
 
 router.post('/', authenticateToken, async (req, res) => {
