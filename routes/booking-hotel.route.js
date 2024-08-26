@@ -4,34 +4,91 @@ const nodemailer = require('nodemailer');
 const BookingApplication = require('../models/booking-hotel');
 const User = require('../models/user'); 
 const authenticateToken = require('../middleware/jwt');
+const Account = require('../models/account-model')
 
 
 
 require('dotenv').config();
 
+// router.post('/', authenticateToken, async (req, res) => {
+//   try {
+//     console.log('Received booking request:', req.body);
+
+//     // Ensure the user is authenticated and their ID is available
+//     if (!req.user || !req.user.userId) {
+//       return res.status(401).send('User not authenticated');
+//     }
+
+//     // Create a new booking application with the authenticated user's ID
+//     const applyBooking = new BookingApplication({
+//       ...req.body,
+//       user: req.user.userId,
+//     });
+
+//     const savedBooking = await applyBooking.save();
+
+//     // Send the saved booking as a response
+//     res.status(201).json(savedBooking);
+
+//   } catch (err) {
+//     console.error('Error handling booking application:', err);
+//     res.status(400).send('Error handling booking application');
+//   }
+// });
+
+
+
+// Room type costs
+const roomCosts = {
+  single: 100,
+  double: 200,
+  suite: 400
+};
+
+// Cost per additional guest
+const guestCost = 50;
+
+// POST route to apply for a booking
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    console.log('Received booking request:', req.body);
+    const { roomType, numberOfGuests } = req.body;
 
-    // Ensure the user is authenticated and their ID is available
-    if (!req.user || !req.user.userId) {
-      return res.status(401).send('User not authenticated');
+    // Find the user's account
+    const account = await Account.findOne({ user: req.user.userId });
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found' });
     }
 
-    // Create a new booking application with the authenticated user's ID
-    const applyBooking = new BookingApplication({
+    // Check if the room type is valid and calculate the total cost
+    const roomCost = roomCosts[roomType];
+    if (!roomCost) {
+      return res.status(400).json({ message: 'Invalid room type' });
+    }
+
+    // Calculate the total cost (room cost + guest cost)
+    const totalGuestCost = (numberOfGuests - 1) * guestCost; // First guest is included in the room cost
+    const totalCost = roomCost + totalGuestCost;
+
+    // Check if the user has sufficient funds
+    if (account.amount < totalCost) {
+      return res.status(400).json({ message: 'Insufficient funds' });
+    }
+
+    // Deduct the total cost from the user's account balance
+    account.amount -= totalCost;
+    await account.save();
+
+    // Create the booking application
+    const bookingApplication = new BookingApplication({
       ...req.body,
-      user: req.user.userId, // Use 'user' to match schema
+      user: req.user.userId
     });
+    await bookingApplication.save();
 
-    const savedBooking = await applyBooking.save();
-
-    // Send the saved booking as a response
-    res.status(201).json(savedBooking);
-
-  } catch (err) {
-    console.error('Error handling booking application:', err);
-    res.status(400).send('Error handling booking application');
+    res.status(201).json({ message: 'Booking application submitted successfully', bookingApplication });
+  } catch (error) {
+    console.error('Error applying for booking:', error);
+    res.status(500).json({ message: 'Error applying for booking', error: error.message });
   }
 });
 

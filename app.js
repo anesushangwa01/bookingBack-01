@@ -36,7 +36,7 @@ app.use(express.json());
 //https://bookingapk.netlify.app/login?notify=true
 //http://localhost:4200
 const corsOptions = {
-  origin: 'https://bookingapk.netlify.app', // Allow only this origin
+  origin: 'http://localhost:4200', // Allow only this origin
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true // Allow credentials
 };
@@ -49,11 +49,13 @@ const addBooking = require('./routes/booking-routes');
 const applyBooking = require('./routes/booking-hotel.route');
 const authRoutes = require('./routes/auth-routes');
 const reg = require('./routes/register.route');
+const account = require('./routes/account');
 
 app.use('/booking', addBooking);
 app.use('/apply', applyBooking);
 app.use('/auth', authRoutes);
 app.use('/register', reg);
+app.use('/account', account);
 
 
 

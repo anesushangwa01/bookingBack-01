@@ -1,69 +1,36 @@
-// const express = require('express');
-// const router = express.Router();
-// const bcrypt = require('bcrypt');
-// const  UserBooking = require('../models/register');
-
-// router.post('/', async (req, res) => {
-//   try {
-//     const { name, email, password } = req.body;
-
-//     if (!name || !email || !password) {
-//       return res.status(400).json({ message: 'All fields are required' });
-//     }
-
-//     const existingUserByEmail = await UserBooking.findOne({ email });
-//     if (existingUserByEmail) {
-//       return res.status(409).json({ message: 'User with this email already exists' });
-//     }
-
-//     const existingUserByName = await UserBooking.findOne({ name });
-//     if (existingUserByName) {
-//       return res.status(409).json({ message: 'User with this name already exists' });
-//     }
-
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//     const user = new UserBooking({
-//       name,
-//       email,
-//       password: hashedPassword
-//     });
-
-//     const savedUser = await user.save();
-//     res.status(201).json(savedUser);
-//   } catch (error) {
-//     console.error('Error registering user:', error);
-//     res.status(500).json({ message: 'Error registering user', error: error.message });
-//   }
-// });
-
-// module.exports = router;
-
 
 
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const UserBooking = require('../models/register');
+const Account = require('../models/account-model')
 
 router.post('/', async (req, res) => {
   try {
     const { name, email, password, favoriteMovie, favoriteCountry } = req.body;
 
+    // Check for missing fields
     if (!name || !email || !password || !favoriteMovie || !favoriteCountry) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
+    // Check if a user with the same email already exists
     const existingUserByEmail = await UserBooking.findOne({ email });
     if (existingUserByEmail) {
       return res.status(409).json({ message: 'User with this email already exists' });
     }
 
+    // Check if a user with the same name already exists
     const existingUserByName = await UserBooking.findOne({ name });
     if (existingUserByName) {
       return res.status(409).json({ message: 'User with this name already exists' });
     }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
     const user = new UserBooking({
       name,
       email,
@@ -72,8 +39,21 @@ router.post('/', async (req, res) => {
       favoriteCountry
     });
 
+    // Save the user to the database
     const savedUser = await user.save();
+
+    // Create an account for the user with a default amount
+    const account = new Account({
+      user: user._id, // Reference the user's ID
+      amount: 3000 // Set the default balance
+    });
+
+    // Save the account to the database
+    await account.save();
+
+    // Respond with the saved user
     res.status(201).json(savedUser);
+
   } catch (error) {
     console.error('Error registering user:', error);
     res.status(500).json({ message: 'Error registering user', error: error.message });
