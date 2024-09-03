@@ -38,7 +38,7 @@ require('dotenv').config();
 
 
 
-// Room type costs
+/// Room type costs
 const roomCosts = {
   single: 100,
   double: 200,
@@ -46,12 +46,15 @@ const roomCosts = {
 };
 
 // Cost per additional guest
-const guestCost = 50;
+const guestCost = 100;
+
+// Per-day cost
+const perDayCost = 100;
 
 // POST route to apply for a booking
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { roomType, numberOfGuests } = req.body;
+    const { roomType, numberOfGuests, checkInDate, checkOutDate } = req.body;
 
     // Find the user's account
     const account = await Account.findOne({ user: req.user.userId });
@@ -59,15 +62,32 @@ router.post('/', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Account not found' });
     }
 
-    // Check if the room type is valid and calculate the total cost
+    // Validate room type
     const roomCost = roomCosts[roomType];
     if (!roomCost) {
       return res.status(400).json({ message: 'Invalid room type' });
     }
 
-    // Calculate the total cost (room cost + guest cost)
+    // Validate dates
+    const checkIn = new Date(checkInDate);
+    const checkOut = new Date(checkOutDate);
+
+    if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+      return res.status(400).json({ message: 'Invalid dates' });
+    }
+
+    if (checkOut <= checkIn) {
+      return res.status(400).json({ message: 'Check-out date must be after check-in date' });
+    }
+
+    // Calculate the number of days between check-in and check-out
+    const timeDifference = checkOut.getTime() - checkIn.getTime();
+    const numberOfDays = Math.ceil(timeDifference / (1000 * 3600 * 24)); // Convert milliseconds to days
+
+    // Calculate the total cost
     const totalGuestCost = (numberOfGuests - 1) * guestCost; // First guest is included in the room cost
-    const totalCost = roomCost + totalGuestCost;
+    const dateCost = numberOfDays * perDayCost; // Per-day cost based on the number of days
+    const totalCost = roomCost + totalGuestCost + dateCost; // Total cost including room, guests, and per-day cost
 
     // Check if the user has sufficient funds
     if (account.amount < totalCost) {
@@ -81,16 +101,23 @@ router.post('/', authenticateToken, async (req, res) => {
     // Create the booking application
     const bookingApplication = new BookingApplication({
       ...req.body,
-      user: req.user.userId
+      user: req.user.userId,
+      totalCost,
+      numberOfDays
     });
     await bookingApplication.save();
 
-    res.status(201).json({ message: 'Booking application submitted successfully', bookingApplication });
+    res.status(201).json({ 
+      message: 'Booking application submitted successfully', 
+      bookingApplication,
+      calculatedTotalCost: totalCost 
+    });
   } catch (error) {
     console.error('Error applying for booking:', error);
     res.status(500).json({ message: 'Error applying for booking', error: error.message });
   }
 });
+
 
 
 router.get('/', authenticateToken, async (req, res) => {
