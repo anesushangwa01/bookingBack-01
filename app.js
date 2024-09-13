@@ -50,12 +50,15 @@ const applyBooking = require('./routes/booking-hotel.route');
 const authRoutes = require('./routes/auth-routes');
 const reg = require('./routes/register.route');
 const account = require('./routes/account');
+const taxi = require('./routes/taxi.booking.routes');
+
 
 app.use('/booking', addBooking);
 app.use('/apply', applyBooking);
 app.use('/auth', authRoutes);
 app.use('/register', reg);
 app.use('/account', account);
+app.use('/taxi', taxi);
 
 
 
