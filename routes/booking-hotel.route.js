@@ -10,31 +10,7 @@ const Account = require('../models/account-model')
 
 require('dotenv').config();
 
-// router.post('/', authenticateToken, async (req, res) => {
-//   try {
-//     console.log('Received booking request:', req.body);
 
-//     // Ensure the user is authenticated and their ID is available
-//     if (!req.user || !req.user.userId) {
-//       return res.status(401).send('User not authenticated');
-//     }
-
-//     // Create a new booking application with the authenticated user's ID
-//     const applyBooking = new BookingApplication({
-//       ...req.body,
-//       user: req.user.userId,
-//     });
-
-//     const savedBooking = await applyBooking.save();
-
-//     // Send the saved booking as a response
-//     res.status(201).json(savedBooking);
-
-//   } catch (err) {
-//     console.error('Error handling booking application:', err);
-//     res.status(400).send('Error handling booking application');
-//   }
-// });
 
 
 
@@ -145,16 +121,6 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 
-// router.get('/', authenticateToken, async (req, res) => {
-//   try {
-//     const bookings = await BookingApplication.find({ user: req.user._id }).exec();
-//     if (!bookings || bookings.length === 0) {
-//       return res.status(404).send('No bookings found');
-//     }
-//     res.json(bookings);
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// });
+
 
 module.exports = router;
