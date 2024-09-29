@@ -6,7 +6,7 @@ const authenticateToken = require('../middleware/jwt');
 const isAdmin = require('../middleware/admin.jwt');
 
 // Admin route to add taxi
-router.post('/addTaxi' , authenticateToken, isAdmin, async (req, res) => {
+router.post('/addTaxi' , authenticateToken, async (req, res) => {
   try {
     const taxi = new Taxi(req.body);
     await taxi.save();
@@ -66,5 +66,34 @@ router.post('/bookTaxi', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Error booking taxi' });
   }
 });
+
+
+router.get('/booked', authenticateToken, async (req, res) => {
+  try {
+    // Log the user ID for debugging
+    console.log('Request user ID:', req.user.userId);
+
+    // Fetch bookings for the authenticated user
+    const bookings = await TaxiBooking.find({ user: req.user.userId })
+      .populate('taxi')
+      .populate('user')
+      .exec();
+
+    // Check if bookings exist for the user
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({ error: 'No bookings found' });
+    }
+
+    // Respond with the user's bookings
+    res.json(bookings);
+  } catch (err) {
+    // Log the error for debugging purposes
+    console.error('Error fetching bookings:', err);
+
+    // Respond with a 500 status code for internal server error
+    res.status(500).send('Internal server error');
+  }
+});
+
 
 module.exports = router;
