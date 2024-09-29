@@ -8,6 +8,8 @@ const TaxiBookingSchema = new mongoose.Schema({
   toLocation: { type: String, required: true },
   pickupTime: { type: Date,},
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  driverName: { type: String, required: true }, // Add driver name
+  carType: { type: String, required: true },    // Add car type
 });
 
 module.exports = mongoose.model('TaxiBooking', TaxiBookingSchema);

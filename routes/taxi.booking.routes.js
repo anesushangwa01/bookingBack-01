@@ -46,13 +46,18 @@ router.post('/bookTaxi', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Taxi is unavailable' });
     }
 
-    // Create the booking
+    // Extract the driver name and car type from the taxi object
+    const { driverName, carType } = taxi;
+
+    // Create the booking with the required fields, including driverName and carType
     const booking = new TaxiBooking({
       taxi: taxiId,
       fromLocation,
       toLocation,
       pickupTime,
-      user: userId
+      user: userId,
+      driverName,   // Add the driverName to the booking
+      carType       // Add the carType to the booking
     });
 
     await booking.save();
@@ -63,9 +68,11 @@ router.post('/bookTaxi', authenticateToken, async (req, res) => {
 
     res.status(200).json({ message: 'Taxi booked successfully', booking });
   } catch (err) {
+    console.error('Error booking taxi:', err);
     res.status(500).json({ error: 'Error booking taxi' });
   }
 });
+
 
 
 router.get('/booked', authenticateToken, async (req, res) => {
