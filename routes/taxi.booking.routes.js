@@ -19,7 +19,7 @@ router.post('/addTaxi' , authenticateToken, async (req, res) => {
 // Get available taxis (not booked)
 router.get('/availableTaxis', async (req, res) => {
   try {
-    const taxis = await Taxi.find();
+    const taxis = await Taxi.find({ isBooked: false });
     res.json(taxis);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching taxis', error });
