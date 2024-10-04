@@ -7,6 +7,6 @@ const userSchema = new mongoose.Schema({
   resetCode: { type: String } 
 });
 
-const register = mongoose.model('registers', userSchema);
+const register = mongoose.model('register', userSchema);
 
 module.exports = register;
