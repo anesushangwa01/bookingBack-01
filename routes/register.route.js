@@ -32,7 +32,7 @@ router.post('/request-reset-password', async (req, res) => {
         "Messages": [{
           "From": {
             "Email": "anesushangwa01@gmail.com",
-            "Name": "Your App Name"
+            "Name": "Booking app"
           },
           "To": [{
             "Email": user.email,
